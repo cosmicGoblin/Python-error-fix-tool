@@ -1,0 +1,56 @@
+"""
+At the command line, only need to run once to install the package via pip:
+
+$ pip install google-generativeai
+
+"""
+
+import google.generativeai as palm
+
+palm.configure(api_key="YOUR API KEY")
+
+defaults = {
+  'model': 'models/text-bison-001',
+  'temperature': 0.7,
+  'candidate_count': 1,
+  'top_k': 40,
+  'top_p': 0.95,
+  'max_output_tokens': 1024,
+  'stop_sequences': [],
+  'safety_settings': [{"category":"HARM_CATEGORY_DEROGATORY","threshold":1},{"category":"HARM_CATEGORY_TOXICITY","threshold":1},{"category":"HARM_CATEGORY_VIOLENCE","threshold":2},{"category":"HARM_CATEGORY_SEXUAL","threshold":2},{"category":"HARM_CATEGORY_MEDICAL","threshold":2},{"category":"HARM_CATEGORY_DANGEROUS","threshold":2}],
+}
+inputCodewitherror = '# This code attempts to divide two numbers, but it has a division by zero error.numerator = 10denominator = 0  # Division by zero error will occur hereresult = numerator / denominatorprint("The result of the division is:", result)'
+prompt = f"""input: Code with error # This is a simple Python program with errorsdef add_numbers(a, b):    result = a + b    return resultx = 5y = "2"  # This should be an integer, not a stringsum = add_numbers(x, y)  # TypeError: unsupported operand type(s) for +: 'int' and 'str'print("The sum of", x, "and", y, "is", sum)
+output: Fixed Code def add_numbers(a, b):
+    result = a + b
+    return result
+
+x = 5
+y = 2  # Corrected to an integer
+
+result = add_numbers(x, y)  # Now it will work correctly
+
+print("The sum of", x, "and", y, "is", result)
+input: Code with error def factorial(n):    if n == 0:        return 1    else:        return n * factorial(n - 1)number = input("Enter a number: ")  # This should be converted to an integerresult = factorial(number)  # TypeError: unsupported operand type(s) for *: 'str' and 'int'print(f"The factorial of {number} is {result}")
+output: Fixed Code def factorial(n):
+    if n &lt; 0:
+        return "Undefined"  # Handle negative numbers gracefully
+    elif n == 0:
+        return 1
+    else:
+        return n * factorial(n - 1)
+
+try:
+    number = int(input("Enter a number: "))  # Convert input to an integer
+    result = factorial(number)
+    print(f"The factorial of {number} is {result}")
+except ValueError:
+    print("Please enter a valid integer.")
+input: Code with error {inputCodewitherror}
+output: Fixed Code"""
+
+response = palm.generate_text(
+  **defaults,
+  prompt=prompt
+)
+print(response.result)
